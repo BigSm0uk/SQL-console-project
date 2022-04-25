@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.IO;
 
 namespace Console_sqlTool_projects
 {
@@ -110,13 +111,64 @@ namespace Console_sqlTool_projects
                 }
             }
         }
+        public void Min(SqlConnection connection)
+        {
+            sqlcommand = new SqlCommand($"Select fio, avg_score from students where avg_score =(Select Min(AVG_score) from students)", connection);
+            dataReader = sqlcommand.ExecuteReader();
+            while (dataReader.Read())
+                Console.WriteLine($"Минимальный средний балл: {dataReader["avg_score"]} у {dataReader["FIO"]}");
+            if (dataReader != null)
+            {
+                dataReader.Close();
+            }
+        }
+        public void Max(SqlConnection connection)
+        {
+            sqlcommand = new SqlCommand($"Select fio, avg_score from students where avg_score = (select max(avg_score) from students)", connection);
+            dataReader = sqlcommand.ExecuteReader();
+            while (dataReader.Read())
+                Console.WriteLine($"Максимальный средний балл: {dataReader["avg_score"]} у {dataReader["FIO"]}");
+            if (dataReader != null)
+            {
+                dataReader.Close();
+            }
+        }
+        public void AVG(SqlConnection connection)
+        {
+            sqlcommand = new SqlCommand($"Select AVG(AVG_score) from students", connection);
+            Console.WriteLine($"Средний балл: {sqlcommand.ExecuteScalar()}");
+        }
+        public void Sum(SqlConnection connection)
+        {
+            sqlcommand = new SqlCommand($"Select sum(AVG_score) from students", connection);
+            Console.WriteLine($"Cумма средних баллов: {sqlcommand.ExecuteScalar()}");
+        }
+        public void FSelectAll(SqlConnection connection)
+        {
+            sqlcommand = new SqlCommand($"Select * from students", connection);
+            dataReader = sqlcommand.ExecuteReader();
+            string content = string.Empty;
+            while (dataReader.Read())
+            {
+                content += $"{dataReader["Id"]} {dataReader["FIO"]} {dataReader["Birthday"]} {dataReader["University"]} " +
+                    $"{dataReader["Group_number"]} {dataReader["Course"]} {dataReader["AVG_score"]}\n";
+            }
+            using (StreamWriter sw = new StreamWriter($"{AppDomain.CurrentDomain.BaseDirectory}/{"DB_content"}_{DateTime.Now.ToString().Replace(':', '-')}.txt", true, Encoding.UTF8))
+            {
+                sw.WriteLine(DateTime.Now.ToString());
+                sw.WriteLine(content);
+            }
+
+            if (dataReader != null)
+            {
+                dataReader.Close();
+            }
+            SelectAll( connection);
+        }
         public void ErrorShow(string ex)
         {
             Console.Error.WriteLine(ex);
         }
-
-
-
     }
 
 }
