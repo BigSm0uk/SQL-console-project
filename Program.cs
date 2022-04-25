@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,7 +21,7 @@ namespace Console_sqlTool_projects
             connection.Open();
             SQL_Tools tools = new SQL_Tools();
             MessageService messageService = new MessageService();
-            Console.WriteLine("hello!");
+            Console.WriteLine("Привет! Начнем работу.");
 
             while (true)
             {
@@ -30,8 +30,9 @@ namespace Console_sqlTool_projects
                     string command = string.Empty;
                     Console.Write("> ");
                     command = Console.ReadLine();
+                    if (command == "exit")
+                        break;
                     string[] command_array = command.ToLower().Split(' ');
-
                     switch(command_array[0])
                     {
                         case "select":
@@ -55,10 +56,24 @@ namespace Console_sqlTool_projects
                         case "search":
                             tools.Search(command_array[1], command_array[2], connection);
                             break;
+                        case "min":
+                            tools.Min(connection);
+                            break;
+                        case "max":
+                            tools.Max(connection);
+                            break;
+                        case "avg":
+                            tools.AVG(connection);
+                            break;
+                        case "sum":
+                            tools.Sum(connection);
+                            break;
+                        case "fselectall":
+                            tools.FSelectAll(connection);
+                            break;
                         default:
                             messageService.ShowMessage(command);
                             break; 
-
                     }
                 }
                 catch (Exception ex)
